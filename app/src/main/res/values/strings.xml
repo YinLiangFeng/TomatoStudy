@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">番茄自习室</string>
+    <string name="project_ready">Java、AndroidX、Material 底部导航已配置</string>
+    <string name="nav_task">待办</string>
+    <string name="nav_collection">待办集</string>
+    <string name="nav_lock_focus">锁机</string>
+    <string name="nav_statistics">统计数据</string>
+    <string name="nav_mine">我的</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_task"
+        android:icon="@drawable/ic_nav_task"
+        android:title="@string/nav_task" />
+
+    <item
+        android:id="@+id/nav_collection"
+        android:icon="@drawable/ic_nav_collection"
+        android:title="@string/nav_collection" />
+
+    <item
+        android:id="@+id/nav_lock_focus"
+        android:icon="@drawable/ic_nav_lock_focus"
+        android:title="@string/nav_lock_focus" />
+
+    <item
+        android:id="@+id/nav_statistics"
+        android:icon="@drawable/ic_nav_statistics"
+        android:title="@string/nav_statistics" />
+
+    <item
+        android:id="@+id/nav_mine"
+        android:icon="@drawable/ic_nav_mine"
+        android:title="@string/nav_mine" />
+</menu>
