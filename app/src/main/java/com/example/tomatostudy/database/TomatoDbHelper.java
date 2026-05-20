@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class TomatoDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "tomato_study.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 1;
 
     public static final String TABLE_USER = "user";
     public static final String TABLE_TASK = "task";
@@ -113,12 +113,10 @@ public class TomatoDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 2) {
-            createAllTables(db);
-        }
-        if (oldVersion >= 2 && oldVersion < 3) {
-            db.execSQL("ALTER TABLE " + TABLE_USER + " ADD COLUMN profile TEXT");
-        }
+        // 只有当 DATABASE_VERSION 变大时，系统才会自动调用这里。
+        // 当前项目还处于初始开发阶段，版本号保持 1，暂时不需要真正的升级 SQL。
+        // 后续如果发布后再新增字段或新表，应在这里根据 oldVersion 逐步补充 ALTER TABLE 等升级逻辑。
+        createAllTables(db);
     }
 
     private void createAllTables(SQLiteDatabase db) {

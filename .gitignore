@@ -13,3 +13,7 @@ Thumbs.db
 *.jks
 *.keystore
 skills/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3

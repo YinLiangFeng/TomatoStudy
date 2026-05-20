@@ -871,9 +871,9 @@ MineFragment
 4. 创建 `TomatoDbHelper`。（已完成）
 5. 完成 `user`、`task`、`focus_record`、`check_in`、`settings` 表结构。（已完成）
 6. 创建 Model、DAO、Repository。（已完成）
-7. 实现 `SplashActivity` 登录状态判断。
-8. 实现 `LoginActivity`、`LoginFragment`、`RegisterFragment`。
-9. 实现注册、登录、退出登录。
+7. 实现 `SplashActivity` 登录状态判断。（已完成）
+8. 实现 `LoginActivity`、`LoginFragment`、`RegisterFragment`。（已完成）
+9. 实现注册、登录、退出登录。（已完成）
 10. 实现 `MainActivity` 和底部导航栏。
 11. 实现 `TaskFragment` 任务列表。
 12. 实现 `TaskAdapter` 任务卡片。

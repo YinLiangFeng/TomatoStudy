@@ -36,6 +36,16 @@
                 android:text="@string/project_ready"
                 android:textColor="@color/text_secondary"
                 android:textSize="16sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/logoutButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/logout_button"
+                android:textSize="15sp"
+                app:backgroundTint="@color/tomato_primary"
+                app:cornerRadius="8dp" />
         </LinearLayout>
     </FrameLayout>
 
