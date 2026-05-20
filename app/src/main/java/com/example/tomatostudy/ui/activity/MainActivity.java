@@ -1,9 +1,10 @@
-package com.example.tomatostudy;
+package com.example.tomatostudy.ui.activity;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.tomatostudy.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {

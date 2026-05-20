@@ -867,10 +867,10 @@ MineFragment
 
 1. 创建 Android 工程。（已完成）
 2. 配置 Java、AndroidX、Material 底部导航。（已完成）
-3. 创建基础包结构。
-4. 创建 `TomatoDbHelper`。
-5. 完成 `user`、`task`、`focus_record`、`check_in`、`settings` 表结构。
-6. 创建 Model、DAO、Repository。
+3. 创建基础包结构。（已完成）
+4. 创建 `TomatoDbHelper`。（已完成）
+5. 完成 `user`、`task`、`focus_record`、`check_in`、`settings` 表结构。（已完成）
+6. 创建 Model、DAO、Repository。（已完成）
 7. 实现 `SplashActivity` 登录状态判断。
 8. 实现 `LoginActivity`、`LoginFragment`、`RegisterFragment`。
 9. 实现注册、登录、退出登录。
