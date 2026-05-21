@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/taskEditBackText"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="@string/back_button"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/taskEditTitleText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/task_edit_add_title"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="48dp"
+                android:layout_height="48dp" />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/taskTitleInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="@string/task_title_hint"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/tomato_primary"
+            app:hintTextColor="@color/tomato_primary">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/taskTitleEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/taskDescriptionInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/task_description_hint"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/tomato_primary"
+            app:hintTextColor="@color/tomato_primary">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/taskDescriptionEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:minLines="3" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/task_focus_mode_label"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/taskFocusModeGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/forwardModeRadio"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="@string/focus_mode_forward"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <RadioButton
+                android:id="@+id/countdownModeRadio"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="@string/focus_mode_countdown"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/taskFocusMinutesInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/task_focus_minutes_hint"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/tomato_primary"
+                app:hintTextColor="@color/tomato_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/taskFocusMinutesEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/taskRestMinutesInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:hint="@string/task_rest_minutes_hint"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/tomato_primary"
+                app:hintTextColor="@color/tomato_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/taskRestMinutesEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/taskPriorityInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/task_priority_hint"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/tomato_primary"
+            app:hintTextColor="@color/tomato_primary">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/taskPriorityEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/taskCollectionInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/task_collection_hint"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/tomato_primary"
+            app:hintTextColor="@color/tomato_primary">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/taskCollectionEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/taskReminderInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/task_reminder_hint"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/tomato_primary"
+            app:hintTextColor="@color/tomato_primary">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/taskReminderEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="time"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/taskBackgroundInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/task_background_hint"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/tomato_primary"
+            app:hintTextColor="@color/tomato_primary">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/taskBackgroundEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/taskSaveButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="28dp"
+            android:text="@string/task_save_button"
+            android:textSize="16sp"
+            app:backgroundTint="@color/tomato_primary"
+            app:cornerRadius="8dp" />
+    </LinearLayout>
+</ScrollView>

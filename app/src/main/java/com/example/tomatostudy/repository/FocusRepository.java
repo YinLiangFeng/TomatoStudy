@@ -46,4 +46,12 @@ public class FocusRepository {
     public int loadDailyFocusMinutes(int userId, String date) {
         return focusDao.getDailyFocusMinutes(userId, date);
     }
+
+    public int loadTaskFocusCount(int userId, int taskId) {
+        return focusDao.getTaskFocusCount(userId, taskId);
+    }
+
+    public int loadTaskFocusMinutes(int userId, int taskId) {
+        return focusDao.getTaskFocusMinutes(userId, taskId);
+    }
 }

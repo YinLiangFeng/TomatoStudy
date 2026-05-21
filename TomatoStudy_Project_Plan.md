@@ -874,12 +874,12 @@ MineFragment
 7. 实现 `SplashActivity` 登录状态判断。（已完成）
 8. 实现 `LoginActivity`、`LoginFragment`、`RegisterFragment`。（已完成）
 9. 实现注册、登录、退出登录。（已完成）
-10. 实现 `MainActivity` 和底部导航栏。
-11. 实现 `TaskFragment` 任务列表。
-12. 实现 `TaskAdapter` 任务卡片。
-13. 实现任务新增和编辑。
-14. 实现点击任务卡片弹出 `TaskActionDialogFragment`。
-15. 实现任务删除、编辑入口、累计专注展示。
+10. 实现 `MainActivity` 和底部导航栏。（已完成）
+11. 实现 `TaskFragment` 任务列表。（已完成）
+12. 实现 `TaskAdapter` 任务卡片。（已完成）
+13. 实现任务新增和编辑。（已完成）
+14. 实现点击任务卡片弹出 `TaskActionDialogFragment`。（已完成）
+15. 实现任务删除、编辑入口、累计专注展示。（已完成）
 16. 实现点击“开始”进入 `FocusActivity`。
 17. 实现专注计时、暂停、继续、结束。
 18. 实现结束专注后保存 `focus_record`。

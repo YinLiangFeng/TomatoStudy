@@ -4,6 +4,8 @@ public class Task {
 
     public static final String FOCUS_MODE_FORWARD = "forward";
     public static final String FOCUS_MODE_COUNTDOWN = "countdown";
+    public static final int STATUS_PENDING = 0;
+    public static final int STATUS_COMPLETED = 1;
 
     private int id;
     private int userId;

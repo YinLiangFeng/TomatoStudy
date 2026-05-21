@@ -1,46 +1,56 @@
 package com.example.tomatostudy.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.fragment.app.Fragment;
 
 import com.example.tomatostudy.R;
-import com.example.tomatostudy.viewmodel.LoginViewModel;
+import com.example.tomatostudy.ui.fragment.LockFocusFragment;
+import com.example.tomatostudy.ui.fragment.MineFragment;
+import com.example.tomatostudy.ui.fragment.StatisticsFragment;
+import com.example.tomatostudy.ui.fragment.TaskCollectionFragment;
+import com.example.tomatostudy.ui.fragment.TaskFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
 
 public class MainActivity extends AppCompatActivity {
-
-    private LoginViewModel loginViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setSelectedItemId(R.id.nav_task);
-
-        MaterialButton logoutButton = findViewById(R.id.logoutButton);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout();
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_task) {
+                switchMainFragment(new TaskFragment());
+                return true;
+            } else if (itemId == R.id.nav_collection) {
+                switchMainFragment(new TaskCollectionFragment());
+                return true;
+            } else if (itemId == R.id.nav_lock_focus) {
+                switchMainFragment(new LockFocusFragment());
+                return true;
+            } else if (itemId == R.id.nav_statistics) {
+                switchMainFragment(new StatisticsFragment());
+                return true;
+            } else if (itemId == R.id.nav_mine) {
+                switchMainFragment(new MineFragment());
+                return true;
             }
+            return false;
         });
+
+        if (savedInstanceState == null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_task);
+        }
     }
 
-    private void logout() {
-        loginViewModel.logout();
-        Toast.makeText(this, R.string.logout_success_tip, Toast.LENGTH_SHORT).show();
-
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+    private void switchMainFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainFragmentContainer, fragment)
+                .commit();
     }
 }

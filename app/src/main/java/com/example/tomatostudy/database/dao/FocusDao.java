@@ -107,6 +107,22 @@ public class FocusDao {
         );
     }
 
+    public int getTaskFocusCount(int userId, int taskId) {
+        return queryInt(
+                "SELECT COUNT(*) FROM " + TomatoDbHelper.TABLE_FOCUS_RECORD +
+                        " WHERE user_id=? AND task_id=? AND completed=1",
+                new String[]{String.valueOf(userId), String.valueOf(taskId)}
+        );
+    }
+
+    public int getTaskFocusMinutes(int userId, int taskId) {
+        return queryInt(
+                "SELECT IFNULL(SUM(duration_minutes), 0) FROM " + TomatoDbHelper.TABLE_FOCUS_RECORD +
+                        " WHERE user_id=? AND task_id=? AND completed=1",
+                new String[]{String.valueOf(userId), String.valueOf(taskId)}
+        );
+    }
+
     private int queryInt(String sql, String[] args) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(sql, args);
