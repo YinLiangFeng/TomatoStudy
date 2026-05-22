@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tomatostudy.R;
 import com.example.tomatostudy.database.model.Task;
+import com.example.tomatostudy.ui.activity.FocusActivity;
 import com.example.tomatostudy.ui.activity.TaskEditActivity;
 import com.example.tomatostudy.ui.adapter.TaskAdapter;
 import com.example.tomatostudy.ui.dialog.TaskActionDialogFragment;
@@ -130,10 +130,13 @@ public class TaskFragment extends Fragment {
     }
 
     private void startFocus(Task task) {
-        Toast.makeText(
-                requireContext(),
-                getString(R.string.start_focus_next_step_tip, task.getTitle()),
-                Toast.LENGTH_SHORT
-        ).show();
+        Intent intent = new Intent(requireContext(), FocusActivity.class);
+        intent.putExtra(FocusActivity.EXTRA_TASK_ID, task.getId());
+        intent.putExtra(FocusActivity.EXTRA_TASK_TITLE, task.getTitle());
+        intent.putExtra(FocusActivity.EXTRA_FOCUS_MODE, task.getFocusMode());
+        intent.putExtra(FocusActivity.EXTRA_FOCUS_MINUTES, task.getFocusMinutes());
+        intent.putExtra(FocusActivity.EXTRA_REST_MINUTES, task.getRestMinutes());
+        intent.putExtra(FocusActivity.EXTRA_BACKGROUND_RES, task.getBackgroundRes());
+        startActivity(intent);
     }
 }
