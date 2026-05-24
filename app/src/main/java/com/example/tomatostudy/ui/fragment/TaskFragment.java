@@ -63,13 +63,13 @@ public class TaskFragment extends Fragment {
         taskAdapter = new TaskAdapter(requireContext(), new TaskAdapter.OnTaskClickListener() {
             @Override
             public void onTaskClick(Task task) {
-                // 点击任务卡片主体只打开任务操作入口，后续第 14 步接 TaskActionDialogFragment。
+                // 点击任务卡片主体只打开任务操作入口
                 showTaskActionEntry(task);
             }
 
             @Override
             public void onStartClick(Task task) {
-                // 点击右侧“开始”按钮才进入计时流程，后续第 16 步接 FocusActivity。
+                // 点击右侧“开始”按钮才进入计时流程
                 startFocus(task);
             }
         });

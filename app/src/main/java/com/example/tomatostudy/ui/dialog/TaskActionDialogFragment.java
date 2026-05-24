@@ -103,7 +103,7 @@ public class TaskActionDialogFragment extends BottomSheetDialogFragment {
         bindPlaceholderAction(view, R.id.dialogHistoryButton, R.string.task_action_focus_history);
         bindPlaceholderAction(view, R.id.dialogStatisticsButton, R.string.task_action_statistics);
 
-        // 第 14 步先完成弹窗展示；编辑、删除和累计专注等真实操作会在第 15 步接入。
+
         bindPlaceholderAction(view, R.id.dialogEditButton, R.string.task_action_edit);
         bindPlaceholderAction(view, R.id.dialogDeleteButton, R.string.task_action_delete);
 
