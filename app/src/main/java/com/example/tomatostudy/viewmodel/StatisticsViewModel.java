@@ -11,6 +11,7 @@ import com.example.tomatostudy.database.model.FocusTimePeriodItem;
 import com.example.tomatostudy.database.model.User;
 import com.example.tomatostudy.repository.FocusRepository;
 import com.example.tomatostudy.repository.UserRepository;
+import com.example.tomatostudy.util.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,23 @@ public class StatisticsViewModel extends AndroidViewModel {
         return new TotalFocusData(totalCount, totalMinutes, averageDailyMinutes);
     }
 
+    public void loadTotalFocusDataAsync(final AppExecutors.Callback<TotalFocusData> callback) {
+        AppExecutors.executeOnIo(new Runnable() {
+            @Override
+            public void run() {
+                final TotalFocusData data = loadTotalFocusData();
+                AppExecutors.postToMain(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (callback != null) {
+                            callback.onComplete(data);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     public DailyFocusData loadDailyFocusData(String date) {
         User currentUser = userRepository.getCurrentUser();
         if (currentUser == null) {
@@ -50,6 +68,24 @@ public class StatisticsViewModel extends AndroidViewModel {
         return new DailyFocusData(dailyCount, dailyMinutes);
     }
 
+    public void loadDailyFocusDataAsync(final String date,
+                                        final AppExecutors.Callback<DailyFocusData> callback) {
+        AppExecutors.executeOnIo(new Runnable() {
+            @Override
+            public void run() {
+                final DailyFocusData data = loadDailyFocusData(date);
+                AppExecutors.postToMain(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (callback != null) {
+                            callback.onComplete(data);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     public List<FocusDurationItem> loadDailyTaskDurationDistribution(String date) {
         User currentUser = userRepository.getCurrentUser();
         if (currentUser == null) {
@@ -57,6 +93,24 @@ public class StatisticsViewModel extends AndroidViewModel {
         }
 
         return focusRepository.loadDailyTaskDurationDistribution(currentUser.getId(), date);
+    }
+
+    public void loadDailyTaskDurationDistributionAsync(final String date,
+                                                       final AppExecutors.Callback<List<FocusDurationItem>> callback) {
+        AppExecutors.executeOnIo(new Runnable() {
+            @Override
+            public void run() {
+                final List<FocusDurationItem> items = loadDailyTaskDurationDistribution(date);
+                AppExecutors.postToMain(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (callback != null) {
+                            callback.onComplete(items);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     public List<FocusTimePeriodItem> loadMonthlyTimePeriodDistribution(long monthStartTime,
@@ -73,6 +127,28 @@ public class StatisticsViewModel extends AndroidViewModel {
         );
     }
 
+    public void loadMonthlyTimePeriodDistributionAsync(final long monthStartTime,
+                                                       final long nextMonthStartTime,
+                                                       final AppExecutors.Callback<List<FocusTimePeriodItem>> callback) {
+        AppExecutors.executeOnIo(new Runnable() {
+            @Override
+            public void run() {
+                final List<FocusTimePeriodItem> items = loadMonthlyTimePeriodDistribution(
+                        monthStartTime,
+                        nextMonthStartTime
+                );
+                AppExecutors.postToMain(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (callback != null) {
+                            callback.onComplete(items);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     public List<FocusDailyTrendItem> loadMonthlyFocusTrend(long monthStartTime,
                                                            long nextMonthStartTime,
                                                            int daysInMonth) {
@@ -87,6 +163,30 @@ public class StatisticsViewModel extends AndroidViewModel {
                 nextMonthStartTime,
                 daysInMonth
         );
+    }
+
+    public void loadMonthlyFocusTrendAsync(final long monthStartTime,
+                                           final long nextMonthStartTime,
+                                           final int daysInMonth,
+                                           final AppExecutors.Callback<List<FocusDailyTrendItem>> callback) {
+        AppExecutors.executeOnIo(new Runnable() {
+            @Override
+            public void run() {
+                final List<FocusDailyTrendItem> items = loadMonthlyFocusTrend(
+                        monthStartTime,
+                        nextMonthStartTime,
+                        daysInMonth
+                );
+                AppExecutors.postToMain(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (callback != null) {
+                            callback.onComplete(items);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     public static class TotalFocusData {

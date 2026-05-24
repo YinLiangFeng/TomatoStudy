@@ -9,6 +9,8 @@ import android.os.Looper;
 
 import androidx.annotation.Nullable;
 
+import com.example.tomatostudy.util.AppExecutors;
+
 /**
  * 前台服务：在应用退至后台时，统筹管理专注计时器运行。
  * 本文件应保持精简：负责接收指令、推进计时器状态、
@@ -30,6 +32,7 @@ public class FocusTimerService extends Service {
     private FocusTimerStore store;
     private FocusTimerNotifier notifier;
     private FocusTimerBroadcaster broadcaster;
+    private boolean focusRecordSaveInProgress;
 
     @Override
     public void onCreate() {
@@ -46,11 +49,14 @@ public class FocusTimerService extends Service {
         if (intent == null) {
             store.restoreSnapshot(state);
             if (state.isTimerActive()) {
+                //重新进入前台服务，安排下一次计时刷新，广播给 FocusActivity
                 enterForeground();
                 scheduleTick();
                 broadcastState(null, true);
+                //如果 Service 以后又被系统杀掉，请系统尽量重新创建它。
                 return START_STICKY;
             }
+            //恢复出来发现没有正在进行的计时任务
             stopSelf(startId);
             return START_NOT_STICKY;
         }
@@ -135,6 +141,10 @@ public class FocusTimerService extends Service {
             broadcastState(null, true);
             return;
         }
+        if (focusRecordSaveInProgress) {
+            broadcastState(null, true);
+            return;
+        }
         if (state.timerState == FocusTimerContract.STATE_FINISHED && state.focusRecordSaved) {
             startRestCountdown(completedByTimer, true);
             return;
@@ -143,7 +153,42 @@ public class FocusTimerService extends Service {
         state.markFocusFinished();
         timerHandler.removeCallbacks(timerRunnable);
 
-        boolean saveSuccess = store.saveFocusRecord(state, completedByTimer);
+        saveFocusRecordOnIo(completedByTimer);
+    }
+
+    private void saveFocusRecordOnIo(final boolean completedByTimer) {
+        focusRecordSaveInProgress = true;
+        final int taskId = state.taskId;
+        final String taskTitle = state.taskTitle;
+        final long focusStartTime = state.focusStartTime;
+        final int elapsedSeconds = state.elapsedSeconds;
+        final int focusTotalSeconds = state.getFocusTotalSeconds();
+        final boolean focusRecordSaved = state.focusRecordSaved;
+
+        AppExecutors.executeOnIo(new Runnable() {
+            @Override
+            public void run() {
+                final boolean saveSuccess = store.saveFocusRecordSnapshot(
+                        taskId,
+                        taskTitle,
+                        focusStartTime,
+                        elapsedSeconds,
+                        focusTotalSeconds,
+                        focusRecordSaved,
+                        completedByTimer
+                );
+                AppExecutors.postToMain(new Runnable() {
+                    @Override
+                    public void run() {
+                        handleFocusRecordSaved(completedByTimer, saveSuccess);
+                    }
+                });
+            }
+        });
+    }
+
+    private void handleFocusRecordSaved(boolean completedByTimer, boolean saveSuccess) {
+        focusRecordSaveInProgress = false;
         if (!saveSuccess) {
             state.markFocusSaveFailed();
             notifier.notifyFocusSaveFailed(state);
@@ -153,6 +198,7 @@ public class FocusTimerService extends Service {
             return;
         }
 
+        state.focusRecordSaved = true;
         if (completedByTimer) {
             notifier.showFocusCompletedAlert(state);
         }

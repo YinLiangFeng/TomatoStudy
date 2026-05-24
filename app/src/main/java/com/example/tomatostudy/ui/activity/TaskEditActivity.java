@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tomatostudy.R;
 import com.example.tomatostudy.database.model.Task;
+import com.example.tomatostudy.util.AppExecutors;
 import com.example.tomatostudy.viewmodel.TaskViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -94,16 +95,26 @@ public class TaskEditActivity extends AppCompatActivity {
             return;
         }
 
-        editingTask = taskViewModel.getTaskById(taskId);
-        if (editingTask == null) {
-            Toast.makeText(this, R.string.task_load_fail_tip, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
         titleText.setText(R.string.task_edit_edit_title);
         saveButton.setText(R.string.task_update_button);
-        fillTaskToForm(editingTask);
+        saveButton.setEnabled(false);
+        taskViewModel.getTaskByIdAsync(taskId, new AppExecutors.Callback<Task>() {
+            @Override
+            public void onComplete(Task task) {
+                if (isDestroyed()) {
+                    return;
+                }
+                editingTask = task;
+                if (editingTask == null) {
+                    Toast.makeText(TaskEditActivity.this, R.string.task_load_fail_tip, Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
+
+                fillTaskToForm(editingTask);
+                saveButton.setEnabled(true);
+            }
+        });
     }
 
     private void fillTaskToForm(Task task) {
@@ -159,15 +170,24 @@ public class TaskEditActivity extends AppCompatActivity {
         task.setReminderTime(getText(taskReminderEditText));
         task.setBackgroundRes(getText(taskBackgroundEditText));
 
-        boolean success = taskViewModel.saveTask(task);
-        if (success) {
-            int messageRes = editMode ? R.string.task_update_success_tip : R.string.task_save_success_tip;
-            Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show();
-            setResult(RESULT_OK);
-            finish();
-        } else {
-            Toast.makeText(this, R.string.task_save_fail_tip, Toast.LENGTH_SHORT).show();
-        }
+        saveButton.setEnabled(false);
+        taskViewModel.saveTaskAsync(task, new AppExecutors.Callback<Boolean>() {
+            @Override
+            public void onComplete(Boolean success) {
+                if (isDestroyed()) {
+                    return;
+                }
+                if (Boolean.TRUE.equals(success)) {
+                    int messageRes = editMode ? R.string.task_update_success_tip : R.string.task_save_success_tip;
+                    Toast.makeText(TaskEditActivity.this, messageRes, Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                } else {
+                    saveButton.setEnabled(true);
+                    Toast.makeText(TaskEditActivity.this, R.string.task_save_fail_tip, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private String getSelectedFocusMode() {

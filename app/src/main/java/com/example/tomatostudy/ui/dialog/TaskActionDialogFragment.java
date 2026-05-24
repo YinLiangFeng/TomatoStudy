@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.tomatostudy.R;
 import com.example.tomatostudy.database.model.Task;
 import com.example.tomatostudy.ui.activity.TaskEditActivity;
+import com.example.tomatostudy.util.AppExecutors;
 import com.example.tomatostudy.viewmodel.TaskViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
@@ -93,8 +94,18 @@ public class TaskActionDialogFragment extends BottomSheetDialogFragment {
         backgroundText.setText(TextUtils.isEmpty(backgroundRes)
                 ? getString(R.string.task_action_default_background)
                 : backgroundRes);
-        focusCountText.setText(String.valueOf(taskViewModel.loadTaskFocusCount(taskId)));
-        focusMinutesText.setText(String.valueOf(taskViewModel.loadTaskFocusMinutes(taskId)));
+        focusCountText.setText(String.valueOf(0));
+        focusMinutesText.setText(String.valueOf(0));
+        taskViewModel.loadTaskFocusSummaryAsync(taskId, new AppExecutors.Callback<TaskViewModel.TaskFocusSummary>() {
+            @Override
+            public void onComplete(TaskViewModel.TaskFocusSummary summary) {
+                if (!isAdded() || getView() == null) {
+                    return;
+                }
+                focusCountText.setText(String.valueOf(summary.getFocusCount()));
+                focusMinutesText.setText(String.valueOf(summary.getFocusMinutes()));
+            }
+        });
 
         bindPlaceholderAction(view, R.id.dialogTimerButton, R.string.task_action_timer);
         bindPlaceholderAction(view, R.id.dialogBackgroundButton, R.string.task_action_change_background);
@@ -168,14 +179,22 @@ public class TaskActionDialogFragment extends BottomSheetDialogFragment {
     }
 
     private void deleteCurrentTask() {
-        if (taskViewModel.deleteTask(taskId)) {
-            Toast.makeText(requireContext(), R.string.task_delete_success_tip, Toast.LENGTH_SHORT).show();
-            Bundle result = new Bundle();
-            result.putInt(ARG_TASK_ID, taskId);
-            getParentFragmentManager().setFragmentResult(REQUEST_TASK_CHANGED, result);
-            dismiss();
-        } else {
-            Toast.makeText(requireContext(), R.string.task_delete_fail_tip, Toast.LENGTH_SHORT).show();
-        }
+        taskViewModel.deleteTaskAsync(taskId, new AppExecutors.Callback<Boolean>() {
+            @Override
+            public void onComplete(Boolean success) {
+                if (!isAdded()) {
+                    return;
+                }
+                if (Boolean.TRUE.equals(success)) {
+                    Toast.makeText(requireContext(), R.string.task_delete_success_tip, Toast.LENGTH_SHORT).show();
+                    Bundle result = new Bundle();
+                    result.putInt(ARG_TASK_ID, taskId);
+                    getParentFragmentManager().setFragmentResult(REQUEST_TASK_CHANGED, result);
+                    dismiss();
+                } else {
+                    Toast.makeText(requireContext(), R.string.task_delete_fail_tip, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

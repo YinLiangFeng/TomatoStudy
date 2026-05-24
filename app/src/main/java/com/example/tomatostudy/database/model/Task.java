@@ -2,8 +2,8 @@ package com.example.tomatostudy.database.model;
 
 public class Task {
 
-    public static final String FOCUS_MODE_FORWARD = "forward";
-    public static final String FOCUS_MODE_COUNTDOWN = "countdown";
+    public static final String FOCUS_MODE_FORWARD = "forward";//正向计时模式
+    public static final String FOCUS_MODE_COUNTDOWN = "countdown";//倒计时模式
     public static final int STATUS_PENDING = 0;
     public static final int STATUS_COMPLETED = 1;
 

@@ -21,6 +21,7 @@ import com.example.tomatostudy.ui.activity.FocusActivity;
 import com.example.tomatostudy.ui.activity.TaskEditActivity;
 import com.example.tomatostudy.ui.adapter.TaskAdapter;
 import com.example.tomatostudy.ui.dialog.TaskActionDialogFragment;
+import com.example.tomatostudy.util.AppExecutors;
 import com.example.tomatostudy.viewmodel.TaskViewModel;
 
 import java.util.List;
@@ -97,17 +98,26 @@ public class TaskFragment extends Fragment {
     }
 
     private void loadTaskCards() {
-        List<Task> tasks = taskViewModel.loadTasks();
-        taskAdapter.submitTasks(tasks);
+        taskViewModel.loadTasksAsync(new AppExecutors.Callback<List<Task>>() {
+            @Override
+            public void onComplete(List<Task> tasks) {
+                if (!isAdded() || getView() == null) {
+                    return;
+                }
+                taskAdapter.submitTasks(tasks);
 
-        if (tasks.isEmpty()) {
-            taskRecyclerView.setVisibility(View.GONE);
-            taskEmptyText.setVisibility(View.VISIBLE);
-            return;
-        }
+                if (tasks.isEmpty()) {
+                    //隐藏列表
+                    //显示“暂无任务”之类的空状态文字
+                    taskRecyclerView.setVisibility(View.GONE);
+                    taskEmptyText.setVisibility(View.VISIBLE);
+                    return;
+                }
 
-        taskRecyclerView.setVisibility(View.VISIBLE);
-        taskEmptyText.setVisibility(View.GONE);
+                taskRecyclerView.setVisibility(View.VISIBLE);
+                taskEmptyText.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void registerTaskChangedListener() {

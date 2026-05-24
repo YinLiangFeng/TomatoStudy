@@ -50,7 +50,7 @@ class FocusTimerStore {
         focusRepository = new FocusRepository(this.context);
         userRepository = new UserRepository(this.context);
     }
-
+//apply是异步写
     void persistSnapshot(FocusTimerState state) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit()
@@ -129,6 +129,42 @@ class FocusTimerStore {
 
         state.focusRecordSaved = focusRepository.saveFocusRecord(record) > 0;
         return state.focusRecordSaved;
+    }
+
+    boolean saveFocusRecordSnapshot(int taskId,
+                                    String taskTitle,
+                                    long focusStartTime,
+                                    int elapsedSeconds,
+                                    int focusTotalSeconds,
+                                    boolean focusRecordSaved,
+                                    boolean completedByTimer) {
+        if (focusRecordSaved) {
+            return true;
+        }
+
+        User currentUser = userRepository.getCurrentUser();
+        if (currentUser == null || taskId <= 0 || focusStartTime <= 0L) {
+            return false;
+        }
+
+        int durationSeconds = completedByTimer
+                ? Math.min(focusTotalSeconds, Math.max(0, elapsedSeconds))
+                : Math.max(0, elapsedSeconds);
+        if (durationSeconds <= 0) {
+            return false;
+        }
+
+        long endTime = System.currentTimeMillis();
+        FocusRecord record = new FocusRecord();
+        record.setUserId(currentUser.getId());
+        record.setTaskId(taskId);
+        record.setTaskTitle(taskTitle);
+        record.setStartTime(focusStartTime);
+        record.setEndTime(endTime);
+        record.setDurationMinutes(Math.max(1, (durationSeconds + 59) / 60));
+        record.setCompleted(true);
+        record.setCreatedDate(formatDate(endTime));
+        return focusRepository.saveFocusRecord(record) > 0;
     }
 
     private String formatDate(long timeMillis) {

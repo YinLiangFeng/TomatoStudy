@@ -26,6 +26,7 @@ import com.example.tomatostudy.ui.view.FocusDurationPieChartView;
 import com.example.tomatostudy.ui.view.FocusMonthlyTrendLineChartView;
 import com.example.tomatostudy.ui.view.FocusTimePeriodBarChartView;
 import com.example.tomatostudy.util.TimeZoneUtils;
+import com.example.tomatostudy.util.AppExecutors;
 import com.example.tomatostudy.viewmodel.StatisticsViewModel;
 
 import java.text.SimpleDateFormat;
@@ -186,92 +187,132 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void loadTotalFocus() {
-        StatisticsViewModel.TotalFocusData data = statisticsViewModel.loadTotalFocusData();
-        totalFocusCountText.setText(String.valueOf(data.getTotalCount()));
-        totalFocusDurationText.setText(formatHourMinute(data.getTotalMinutes()));
-        averageDailyFocusText.setText(formatHourMinute(data.getAverageDailyMinutes()));
+        statisticsViewModel.loadTotalFocusDataAsync(new AppExecutors.Callback<StatisticsViewModel.TotalFocusData>() {
+            @Override
+            public void onComplete(StatisticsViewModel.TotalFocusData data) {
+                if (!isFragmentReady()) {
+                    return;
+                }
+                totalFocusCountText.setText(String.valueOf(data.getTotalCount()));
+                totalFocusDurationText.setText(formatHourMinute(data.getTotalMinutes()));
+                averageDailyFocusText.setText(formatHourMinute(data.getAverageDailyMinutes()));
+            }
+        });
     }
 
     private void loadDailyFocus() {
-        String date = dateFormat.format(selectedDate.getTime());
-        StatisticsViewModel.DailyFocusData data = statisticsViewModel.loadDailyFocusData(date);
+        final String date = dateFormat.format(selectedDate.getTime());
         dailyFocusDateText.setText(date);
-        dailyFocusCountText.setText(String.valueOf(data.getDailyCount()));
-        dailyFocusDurationText.setText(getString(R.string.statistics_minute_format, data.getDailyMinutes()));
+        statisticsViewModel.loadDailyFocusDataAsync(date, new AppExecutors.Callback<StatisticsViewModel.DailyFocusData>() {
+            @Override
+            public void onComplete(StatisticsViewModel.DailyFocusData data) {
+                if (!isFragmentReady() || !date.equals(dateFormat.format(selectedDate.getTime()))) {
+                    return;
+                }
+                dailyFocusCountText.setText(String.valueOf(data.getDailyCount()));
+                dailyFocusDurationText.setText(getString(R.string.statistics_minute_format, data.getDailyMinutes()));
+            }
+        });
         loadFocusDurationDistribution(date);
     }
+//加载专注时长分布数据
+    private void loadFocusDurationDistribution(final String date) {
+        statisticsViewModel.loadDailyTaskDurationDistributionAsync(date, new AppExecutors.Callback<List<FocusDurationItem>>() {
+            @Override
+            public void onComplete(List<FocusDurationItem> items) {
+                if (!isFragmentReady() || !date.equals(dateFormat.format(selectedDate.getTime()))) {
+                    return;
+                }
+                if (items.isEmpty()) {
+                    focusDurationPieChartView.setSegments(new ArrayList<FocusDurationPieChartView.Segment>());
+                    focusDurationLegendLayout.removeAllViews();
+                    focusDurationContentLayout.setVisibility(View.GONE);
+                    focusDurationEmptyText.setVisibility(View.VISIBLE);
+                    return;
+                }
 
-    private void loadFocusDurationDistribution(String date) {
-        List<FocusDurationItem> items = statisticsViewModel.loadDailyTaskDurationDistribution(date);
-        if (items.isEmpty()) {
-            focusDurationPieChartView.setSegments(new ArrayList<FocusDurationPieChartView.Segment>());
-            focusDurationLegendLayout.removeAllViews();
-            focusDurationContentLayout.setVisibility(View.GONE);
-            focusDurationEmptyText.setVisibility(View.VISIBLE);
-            return;
-        }
+                List<FocusDurationPieChartView.Segment> segments = new ArrayList<>();
+                focusDurationLegendLayout.removeAllViews();
+                int totalMinutes = 0;
+                for (int i = 0; i < items.size(); i++) {
+                    FocusDurationItem item = items.get(i);
+                    int color = pieColors[i % pieColors.length];
+                    totalMinutes += item.getDurationMinutes();
+                    segments.add(new FocusDurationPieChartView.Segment(
+                            item.getTaskTitle(),
+                            item.getDurationMinutes(),
+                            color
+                    ));
+                    addLegendRow(item, color, i);
+                }
 
-        List<FocusDurationPieChartView.Segment> segments = new ArrayList<>();
-        focusDurationLegendLayout.removeAllViews();
-        int totalMinutes = 0;
-        for (int i = 0; i < items.size(); i++) {
-            FocusDurationItem item = items.get(i);
-            int color = pieColors[i % pieColors.length];
-            totalMinutes += item.getDurationMinutes();
-            segments.add(new FocusDurationPieChartView.Segment(
-                    item.getTaskTitle(),
-                    item.getDurationMinutes(),
-                    color
-            ));
-            addLegendRow(item, color, i);
-        }
-
-        focusDurationPieChartView.setSegments(segments);
-        focusDurationTotalText.setText(getString(R.string.statistics_distribution_total_format, totalMinutes));
-        focusDurationEmptyText.setVisibility(View.GONE);
-        focusDurationContentLayout.setVisibility(View.VISIBLE);
+                focusDurationPieChartView.setSegments(segments);
+                focusDurationTotalText.setText(getString(R.string.statistics_distribution_total_format, totalMinutes));
+                focusDurationEmptyText.setVisibility(View.GONE);
+                focusDurationContentLayout.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void loadMonthlyTimePeriodDistribution() {
-        long monthStartTime = getMonthStartTime(selectedMonth);
-        long nextMonthStartTime = getNextMonthStartTime(selectedMonth);
-        List<FocusTimePeriodItem> items = statisticsViewModel.loadMonthlyTimePeriodDistribution(
-                monthStartTime,
-                nextMonthStartTime
-        );
-
+        final long monthStartTime = getMonthStartTime(selectedMonth);
+        final long nextMonthStartTime = getNextMonthStartTime(selectedMonth);
         timePeriodMonthText.setText(monthFormat.format(selectedMonth.getTime()));
-        timePeriodBarChartView.setItems(items);
-        if (hasFocusMinutes(items)) {
-            timePeriodBarChartView.setVisibility(View.VISIBLE);
-            timePeriodEmptyText.setVisibility(View.GONE);
-            return;
-        }
+        statisticsViewModel.loadMonthlyTimePeriodDistributionAsync(
+                monthStartTime,
+                nextMonthStartTime,
+                new AppExecutors.Callback<List<FocusTimePeriodItem>>() {
+                    @Override
+                    public void onComplete(List<FocusTimePeriodItem> items) {
+                        if (!isFragmentReady() || monthStartTime != getMonthStartTime(selectedMonth)) {
+                            return;
+                        }
+                        timePeriodBarChartView.setItems(items);
+                        if (hasFocusMinutes(items)) {
+                            timePeriodBarChartView.setVisibility(View.VISIBLE);
+                            timePeriodEmptyText.setVisibility(View.GONE);
+                            return;
+                        }
 
-        timePeriodBarChartView.setVisibility(View.GONE);
-        timePeriodEmptyText.setVisibility(View.VISIBLE);
+                        timePeriodBarChartView.setVisibility(View.GONE);
+                        timePeriodEmptyText.setVisibility(View.VISIBLE);
+                    }
+                }
+        );
     }
 
     private void loadMonthlyFocusTrend() {
-        long monthStartTime = getMonthStartTime(selectedTrendMonth);
-        long nextMonthStartTime = getNextMonthStartTime(selectedTrendMonth);
-        int daysInMonth = selectedTrendMonth.getActualMaximum(Calendar.DAY_OF_MONTH);
-        List<FocusDailyTrendItem> items = statisticsViewModel.loadMonthlyFocusTrend(
+        final long monthStartTime = getMonthStartTime(selectedTrendMonth);
+        final long nextMonthStartTime = getNextMonthStartTime(selectedTrendMonth);
+        final int daysInMonth = selectedTrendMonth.getActualMaximum(Calendar.DAY_OF_MONTH);
+        final int month = selectedTrendMonth.get(Calendar.MONTH) + 1;
+        monthlyTrendMonthText.setText(monthFormat.format(selectedTrendMonth.getTime()));
+        statisticsViewModel.loadMonthlyFocusTrendAsync(
                 monthStartTime,
                 nextMonthStartTime,
-                daysInMonth
+                daysInMonth,
+                new AppExecutors.Callback<List<FocusDailyTrendItem>>() {
+                    @Override
+                    public void onComplete(List<FocusDailyTrendItem> items) {
+                        if (!isFragmentReady() || monthStartTime != getMonthStartTime(selectedTrendMonth)) {
+                            return;
+                        }
+                        monthlyTrendLineChartView.setItems(items, month);
+                        if (hasFocusTrendMinutes(items)) {
+                            monthlyTrendLineChartView.setVisibility(View.VISIBLE);
+                            monthlyTrendEmptyText.setVisibility(View.GONE);
+                            return;
+                        }
+
+                        monthlyTrendLineChartView.setVisibility(View.GONE);
+                        monthlyTrendEmptyText.setVisibility(View.VISIBLE);
+                    }
+                }
         );
+    }
 
-        monthlyTrendMonthText.setText(monthFormat.format(selectedTrendMonth.getTime()));
-        monthlyTrendLineChartView.setItems(items, selectedTrendMonth.get(Calendar.MONTH) + 1);
-        if (hasFocusTrendMinutes(items)) {
-            monthlyTrendLineChartView.setVisibility(View.VISIBLE);
-            monthlyTrendEmptyText.setVisibility(View.GONE);
-            return;
-        }
-
-        monthlyTrendLineChartView.setVisibility(View.GONE);
-        monthlyTrendEmptyText.setVisibility(View.VISIBLE);
+    private boolean isFragmentReady() {
+        return isAdded() && getView() != null;
     }
 
     private void addLegendRow(FocusDurationItem item, int color, int index) {

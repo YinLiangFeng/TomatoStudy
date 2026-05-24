@@ -263,11 +263,13 @@ public class FocusActivity extends AppCompatActivity {
         remainingSeconds = Math.max(0, getFocusTotalSeconds() - elapsedSeconds);
 
         if (elapsedSeconds >= getFocusTotalSeconds()) {
+            //修正数字，专注时间不能超过设置时间，剩余时间不能为负数
             elapsedSeconds = getFocusTotalSeconds();
             remainingSeconds = 0;
             timeText.setText(Task.FOCUS_MODE_COUNTDOWN.equals(focusMode)
                     ? formatSeconds(remainingSeconds)
                     : formatSeconds(elapsedSeconds));
+            //如果是true这次结束是计时器自然到点结束的，如果是false说明暂停任务，只是同步专注时间
             if (allowFinish) {
                 finishFocus(true);
             }
@@ -503,7 +505,7 @@ public class FocusActivity extends AppCompatActivity {
             restStartElapsedRealtime = SystemClock.elapsedRealtime() - (restElapsedSeconds * 1000L);
         }
     }
-
+//已专注时间 = 当前时间 - 专注开始时间 - 暂停总时长
     private int calculateFocusElapsedSeconds() {
         if (focusStartElapsedRealtime <= 0L) {
             return Math.max(0, elapsedSeconds);
@@ -551,20 +553,22 @@ public class FocusActivity extends AppCompatActivity {
         Intent intent = new Intent(this, FocusTimerService.class);
         intent.setAction(FocusTimerContract.ACTION_START_FOCUS);
         putTimerExtras(intent);
+        //启动前台服务
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         } else {
             startService(intent);
         }
     }
-
+//请求 Service 结束本次专注
     private void requestServiceCompleteFocus(boolean completedByTimer) {
         Intent intent = new Intent(this, FocusTimerService.class);
         intent.setAction(FocusTimerContract.ACTION_COMPLETE_FOCUS);
+        //EXTRA_COMPLETED_BY_TIMER 表示是不是计时自然结束的
         intent.putExtra(FocusTimerContract.EXTRA_COMPLETED_BY_TIMER, completedByTimer);
         sendTimerServiceIntent(intent);
     }
-
+//向 Service 请求一份当前计时状态快照
     private void requestServiceSnapshot() {
         Intent intent = new Intent(this, FocusTimerService.class);
         intent.setAction(FocusTimerContract.ACTION_REQUEST_SNAPSHOT);
